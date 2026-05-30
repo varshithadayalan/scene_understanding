@@ -12,7 +12,7 @@ from scipy.optimize import linear_sum_assignment
 # -------------------------------
 nusc = NuScenes(
     version='v1.0-mini',
-    dataroot='C:/nuscenes_project/data/sets/nuscenes',
+    dataroot='C:/Users/varsh/nuscenes_project/data/sets/nuscenes',
     verbose=True
 )
 
