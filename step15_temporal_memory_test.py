@@ -13,8 +13,8 @@ Step 15b Validation: Temporal Memory Recovery
 Goal: Prove that the engine can recover an ID after a 3-frame occlusion.
 """
 
-DATAROOT = 'C:/Users/varsh/nuscenes_project/data/sets/nuscenes'
-VERSION = 'v1.0-mini'
+DATAROOT = os.environ.get("NUSCENES_DATAROOT", os.path.expanduser("~/data"))
+VERSION = os.environ.get("NUSCENES_VERSION", "v1.0-mini")
 
 nusc = NuScenes(version=VERSION, dataroot=DATAROOT, verbose=False)
 model = HybridMatcher()

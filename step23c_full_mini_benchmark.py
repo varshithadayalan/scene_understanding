@@ -8,7 +8,7 @@ from nuscenes import NuScenes
 # Add src to path
 sys.path.append(os.path.abspath(os.path.join(os.getcwd(), 'src')))
 
-from matcher.models import HybridMatcher
+from matcher.models import HybridMatcher, load_hybrid_matcher
 from matcher.engine import ResearchEngine
 from matcher.config import ResearchConfig
 
@@ -20,7 +20,7 @@ Goal: Execute a lambda sweep across multiple scenes to validate statistical tren
 def run_on_scenes(lmbda, scene_list, nusc):
     cfg = ResearchConfig()
     cfg.persistence_weight = lmbda
-    model = HybridMatcher()
+    model = load_hybrid_matcher(cfg.checkpoint_path)
     engine = ResearchEngine(nusc, model, cfg)
     
     results = []

@@ -1,7 +1,8 @@
 nuscenes-devkit
 torch
-numpy
+numpy<2.0
 scipy
 matplotlib
 streamlit
 pandas
+motmetrics

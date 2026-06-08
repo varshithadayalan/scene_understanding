@@ -1,3 +1,4 @@
+import os
 from nuscenes import NuScenes
 import math
 import torch
@@ -9,8 +10,8 @@ import random
 # Load dataset
 # -------------------------------
 nusc = NuScenes(
-    version='v1.0-mini',
-    dataroot='C:/nuscenes_project/data/sets/nuscenes',
+    version=os.environ.get("NUSCENES_VERSION", "v1.0-mini"),
+    dataroot=os.environ.get("NUSCENES_DATAROOT", os.path.expanduser("~/data")),
     verbose=True
 )
 

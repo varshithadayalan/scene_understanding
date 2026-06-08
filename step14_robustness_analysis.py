@@ -1,3 +1,4 @@
+import os
 from nuscenes import NuScenes
 import math
 import torch
@@ -20,8 +21,8 @@ Types of Noise:
 # -------------------------------
 # CONFIG
 # -------------------------------
-DATAROOT = 'C:/Users/varsh/nuscenes_project/data/sets/nuscenes'
-VERSION = 'v1.0-mini'
+DATAROOT = os.environ.get("NUSCENES_DATAROOT", os.path.expanduser("~/data"))
+VERSION = os.environ.get("NUSCENES_VERSION", "v1.0-mini")
 
 # -------------------------------
 # Load dataset

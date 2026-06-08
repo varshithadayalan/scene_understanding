@@ -7,7 +7,7 @@ from nuscenes import NuScenes
 # Add src to path
 sys.path.append(os.path.abspath(os.path.join(os.getcwd(), 'src')))
 
-from matcher.models import HybridMatcher
+from matcher.models import HybridMatcher, load_hybrid_matcher
 from matcher.engine import ResearchEngine
 from matcher.config import ResearchConfig
 
@@ -18,7 +18,7 @@ Goal: Quantify MOT metrics (IDRR, IDSW) using the ResearchConfig.
 
 cfg = ResearchConfig()
 nusc = NuScenes(version=cfg.version, dataroot=cfg.dataroot, verbose=False)
-model = HybridMatcher()
+model = load_hybrid_matcher(cfg.checkpoint_path)
 engine = ResearchEngine(nusc, model, cfg)
 
 test_scenes = nusc.scene[7:] # Research on test set

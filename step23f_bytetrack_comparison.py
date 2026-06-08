@@ -56,8 +56,8 @@ def run_bytetrack_benchmark(nusc, scenes):
         formatter.save_tracker_output(scene_info['name'], results, tracker_name)
 
 if __name__ == "__main__":
-    DATAROOT = 'C:/Users/varsh/nuscenes_project/data/sets/nuscenes'
-    nusc = NuScenes(version='v1.0-mini', dataroot=DATAROOT, verbose=False)
+    DATAROOT = os.environ.get("NUSCENES_DATAROOT", os.path.expanduser("~/data"))
+    nusc = NuScenes(version=os.environ.get("NUSCENES_VERSION", "v1.0-mini"), dataroot=DATAROOT, verbose=False)
     target_scenes = nusc.scene[:5]
     
     run_bytetrack_benchmark(nusc, target_scenes)

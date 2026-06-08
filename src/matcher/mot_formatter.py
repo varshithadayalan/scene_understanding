@@ -118,8 +118,8 @@ if __name__ == "__main__":
     from nuscenes import NuScenes
     from matcher.models import HybridMatcher
     
-    DATAROOT = 'C:/Users/varsh/nuscenes_project/data/sets/nuscenes'
-    nusc = NuScenes(version='v1.0-mini', dataroot=DATAROOT, verbose=False)
+    DATAROOT = os.environ.get("NUSCENES_DATAROOT", os.path.expanduser("~/data"))
+    nusc = NuScenes(version=os.environ.get("NUSCENES_VERSION", "v1.0-mini"), dataroot=DATAROOT, verbose=False)
     model = HybridMatcher()
     target_scenes = nusc.scene[:5]
     

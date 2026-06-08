@@ -1,3 +1,4 @@
+import os
 from nuscenes import NuScenes
 import math
 import torch
@@ -22,8 +23,8 @@ Experimental Design:
 # -------------------------------
 # CONFIG
 # -------------------------------
-DATAROOT = 'C:/Users/varsh/nuscenes_project/data/sets/nuscenes'
-VERSION = 'v1.0-mini'
+DATAROOT = os.environ.get("NUSCENES_DATAROOT", os.path.expanduser("~/data"))
+VERSION = os.environ.get("NUSCENES_VERSION", "v1.0-mini")
 
 # Weights for Hybrid Cost (same as Step 11 for consistency)
 ALPHA = 0.4  

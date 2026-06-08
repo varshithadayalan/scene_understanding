@@ -20,8 +20,8 @@ from matplotlib.patches import FancyArrowPatch
 
 # ── CONFIG ─────────────────────────────────────────────────────────────────────
 # Change this to wherever you extracted the mini split
-NUSCENES_DATAROOT = r"C:\Users\varsh\nuscenes_project\data\sets\nuscenes"
-NUSCENES_VERSION  = "v1.0-mini"
+NUSCENES_DATAROOT = os.environ.get("NUSCENES_DATAROOT", os.path.expanduser("~/data"))
+NUSCENES_VERSION  = os.environ.get("NUSCENES_VERSION", "v1.0-mini")
 # ───────────────────────────────────────────────────────────────────────────────
 
 def verify_install():
