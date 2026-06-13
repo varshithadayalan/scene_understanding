@@ -91,3 +91,27 @@ UA-HTIM outperformed ByteTrack by **+16.5% in HOTA** and reduced identity switch
 
 ## 🏁 Final Research State
 The project is wrapped at **Step 23g**. The framework is modular, config-driven, and statistically validated against industry baselines. It is ready for full-scale deployment on the 400GB nuScenes-trainval set.
+
+---
+
+## 🔬 Chapter 8: Reproducibility Audit & Leak-Free Re-evaluation (June 2026)
+
+A reproducibility pass made the repo runnable on a fresh machine (env-var dataset paths, fixed seeds, a `pytest` suite, and a Step-11 CLI). It also added the missing training→tracker link and a rigorous evaluation. Three findings, in order of importance:
+
+### 8.1 Training was never wired into the tracker
+Every benchmark (`step16`, `step23c`) instantiated a **randomly-initialized** `HybridMatcher`; no checkpoint was ever trained and loaded. `train_hybrid.py` now trains both branches on held-out scenes `[5:]` and saves `checkpoints/hybrid_matcher.pth`; `load_hybrid_matcher()` + `cfg.checkpoint_path` (env `HYBRID_CHECKPOINT`) load it. Within the original engine, training appeared to cut IDSW ~45% — but see 8.2.
+
+### 8.2 The original engine leaks ground truth
+`engine.py` keys tracks by the GT `instance_token` and applies the persistence penalty when a candidate detection's **true** identity differs from the track's. The tracker is effectively told the answer, so the headline IDSW reductions (Ch. 6) and the ByteTrack table (Ch. 7) are confounded. A leak-free `OnlineTracker` (`src/matcher/online_tracker.py`) assigns its own synthetic IDs and never reads `instance` during matching.
+
+### 8.3 Honest metrics (motmetrics) — embeddings don't help at this scale
+`step25_mot_eval.py` scores the leak-free tracker with standard `motmetrics` on scenes `[:5]`:
+
+| Config | MOTA ↑ | IDF1 ↑ | IDSW ↓ |
+| :--- | :---: | :---: | :---: |
+| Motion + trajectory buffer | 0.966 | 0.966 | 379 |
+| + Random embedding | 0.967 | 0.974 | 371 |
+| + **Trained** embedding | 0.952 | 0.945 | 544 |
+| Trained embedding, no buffer | 0.958 | 0.937 | 468 |
+
+**Conclusion (revised):** at keyframe rate on nuScenes-mini, **motion + trajectory buffer already reach ~0.97 MOTA/IDF1**, and the learned embedding adds nothing (slightly hurts). The cause is structural: the "embedding" net consumes spatial features (`x, y, vx, vy, conf, unc`), so it is redundant with the motion term rather than a true appearance descriptor. **Scaling this architecture to trainval will not improve tracking.** The genuine next research step is a real appearance embedding (camera-crop / ReID features), then re-run `step25_mot_eval.py`. Numbers reproduce via `python train_hybrid.py && python step25_mot_eval.py` (`experiments/mot_metrics.csv`).

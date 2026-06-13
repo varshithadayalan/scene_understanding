@@ -4,4 +4,8 @@ __pycache__/
 data/
 *.pth
 *.pt
-.envUA_HTIM_Research_Paper.tex
+.env
+UA_HTIM_Research_Paper.tex
+results/
+.pytest_cache/
+*.npy

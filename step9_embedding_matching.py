@@ -1,3 +1,4 @@
+import os
 from nuscenes import NuScenes
 import math
 import torch
@@ -11,8 +12,8 @@ from scipy.optimize import linear_sum_assignment
 # Load dataset
 # -------------------------------
 nusc = NuScenes(
-    version='v1.0-mini',
-    dataroot='C:/Users/varsh/nuscenes_project/data/sets/nuscenes',
+    version=os.environ.get("NUSCENES_VERSION", "v1.0-mini"),
+    dataroot=os.environ.get("NUSCENES_DATAROOT", os.path.expanduser("~/data")),
     verbose=True
 )
 

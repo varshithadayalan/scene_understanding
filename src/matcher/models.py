@@ -1,6 +1,8 @@
+import math
+import os
+
 import torch
 import torch.nn as nn
-import math
 
 class HybridMatcher(nn.Module):
     """
@@ -39,3 +41,21 @@ class HybridMatcher(nn.Module):
     @staticmethod
     def compute_distance(p1, p2):
         return math.sqrt((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2)
+
+
+def load_hybrid_matcher(checkpoint_path=None, emb_dim=16, hidden_dim=64):
+    """Build a HybridMatcher, loading trained weights if a checkpoint exists.
+
+    If ``checkpoint_path`` is falsy or missing, returns a randomly-initialized
+    model (legacy behavior) so existing scripts keep working unchanged.
+    """
+    model = HybridMatcher(emb_dim=emb_dim, hidden_dim=hidden_dim)
+    if checkpoint_path and os.path.exists(checkpoint_path):
+        state = torch.load(checkpoint_path, map_location="cpu")
+        model.load_state_dict(state)
+        print(f"[model] loaded trained checkpoint: {checkpoint_path}")
+    else:
+        if checkpoint_path:
+            print(f"[model] checkpoint not found ({checkpoint_path}); using random init")
+    model.eval()
+    return model

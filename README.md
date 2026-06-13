@@ -23,6 +23,28 @@ The framework is fully modularized:
 - **Advanced Dynamics:** Integration of Unscented Kalman Filters (UKF) for non-linear motion extrapolation.
 - **Multi-Modal:** Incorporating camera-based appearance embeddings.
 
+## 🔁 Reproducibility (this checkout)
+- Dataset paths are read from `NUSCENES_DATAROOT` (default `~/data`) and `NUSCENES_VERSION` (default `v1.0-mini`).
+- Install: `pip install -r requirements-dev.txt` (adds `pytest`); requires `numpy<2.0` for nuscenes-devkit.
+- Unit tests: `pytest` (synthetic fixtures, no dataset needed).
+- Core models: `bash run.sh`; hybrid Step-11 CLI: `bash scripts/run_step11.sh --epochs 5`.
+
+## ⚠️ Rigorous Re-evaluation (June 2026)
+A reproducibility audit added a leak-free evaluation. Two findings qualify the headline numbers above:
+
+1. **The original `engine.py` leaks ground truth.** It keys every track by the GT `instance_token` and adds the persistence penalty when a candidate detection's *true* identity differs from the track's. The large IDSW reductions (and the ByteTrack comparison) come partly from the tracker being told the answer.
+2. **Under standard `motmetrics` (MOTA / IDF1 / IDSW) with a leak-free `OnlineTracker`** (`src/matcher/online_tracker.py`, synthetic IDs), on nuScenes-mini scenes `[:5]`:
+
+   | config | MOTA ↑ | IDF1 ↑ | IDSW ↓ |
+   | :--- | :---: | :---: | :---: |
+   | motion + buffer only | 0.966 | 0.966 | 379 |
+   | + random embedding | 0.967 | 0.974 | 371 |
+   | + **trained** embedding | 0.952 | 0.945 | 544 |
+
+   The learned "embedding" does **not** help (and slightly hurts), because its inputs are spatial (`x, y, vx, vy, conf, unc`) — it is redundant with the motion term, **not a true appearance embedding**. Motion + trajectory buffer already reach ~0.97 MOTA/IDF1 at keyframe rate.
+
+**Implication:** scaling the *current* architecture to `v1.0-trainval` will not improve tracking. The real next step is a genuine appearance embedding (camera-crop / ReID features), then re-evaluate. Reproduce with `python train_hybrid.py && python step25_mot_eval.py` → `experiments/mot_metrics.csv`.
+
 ---
 **Author:** Varshitha Dayalan  
-**Project State:** Completed Research (Mini-Scale Validation)
+**Project State:** Completed Research (Mini-Scale Validation) · Re-evaluated June 2026

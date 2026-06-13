@@ -1,3 +1,4 @@
+import os
 class ResearchConfig:
     """
     Microsoft-Level Research Configuration System.
@@ -5,8 +6,8 @@ class ResearchConfig:
     """
     def __init__(self):
         # Dataset
-        self.dataroot = 'C:/Users/varsh/nuscenes_project/data/sets/nuscenes'
-        self.version = 'v1.0-mini' # Change to 'v1.0-trainval' for full scale
+        self.dataroot = os.environ.get("NUSCENES_DATAROOT", os.path.expanduser("~/data"))
+        self.version = os.environ.get("NUSCENES_VERSION", "v1.0-mini") # Change to 'v1.0-trainval' for full scale
         
         # Model Hyperparameters
         self.alpha_base = 0.4    # Embedding trust
@@ -19,5 +20,10 @@ class ResearchConfig:
         self.re_id_threshold = 5.0 # Base matching threshold
         self.age_threshold_step = 1.5 # How much threshold grows per frame of age
         
+        # Trained weights for the HybridMatcher branches. Empty => random init
+        # (legacy behavior). Set env HYBRID_CHECKPOINT to a .pth to use a
+        # trained tracker.
+        self.checkpoint_path = os.environ.get("HYBRID_CHECKPOINT", "")
+
         # Systems
         self.use_gpu = False     # Toggle for large scale runs
